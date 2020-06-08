@@ -23,20 +23,20 @@ class MainActivity : AppCompatActivity() {
             ApiService.buildService().getData()
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeOn(Schedulers.io())
-                .subscribe({ response -> onResponse(response) }, { t -> onFailure(t) })
+                .subscribe(this::handleResponse, this::handleError)
+//                .subscribe({ response -> onResponse(response) }, { t -> onFailure(t) })
         )
     }
 
-    private fun onFailure(t: Throwable) {
+    private fun handleError(t: Throwable) {
         Toast.makeText(this, t.message, Toast.LENGTH_SHORT).show()
     }
 
-    private fun onResponse(response: List<User>) {
+    private fun handleResponse(response: List<User>) {
         recyclerView.apply {
             setHasFixedSize(true)
             layoutManager = LinearLayoutManager(this@MainActivity)
             adapter = Adapter(response)
         }
-
     }
 }
