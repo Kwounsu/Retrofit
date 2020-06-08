@@ -1,14 +1,12 @@
 package com.example.retrofit
 
-import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 
-class Adapter(val context: Context) : RecyclerView.Adapter<Adapter.ViewHolder>() {
-    var userList : List<User> = listOf()
+class Adapter(var userList: List<User>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val id: TextView = itemView.findViewById(R.id.text_id)
@@ -56,10 +54,5 @@ class Adapter(val context: Context) : RecyclerView.Adapter<Adapter.ViewHolder>()
         holder.company.text = user.company.name
         holder.catchPhrase.text = user.company.catchPhrase
         holder.bs.text = user.company.bs
-    }
-
-    fun setUserListItems(userList: List<User>){
-        this.userList = userList
-        notifyDataSetChanged()
     }
 }

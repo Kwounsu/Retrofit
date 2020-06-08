@@ -1,46 +1,42 @@
 package com.example.retrofit
 
 import android.os.Bundle
-import android.util.Log
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.CompositeDisposable
+import io.reactivex.schedulers.Schedulers
 
 class MainActivity : AppCompatActivity() {
-    val TAG = "retrofit"
+    lateinit var recyclerView: RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val recyclerView = findViewById<RecyclerView>(R.id.recyclerView)
-        val layoutManager = LinearLayoutManager(this)
-        layoutManager.orientation = LinearLayoutManager.VERTICAL
-        recyclerView.layoutManager = layoutManager
-        val adapter = Adapter(this)
-        recyclerView.adapter = adapter
+        recyclerView = findViewById(R.id.recyclerView)
 
-        val api = ApiService.create().getData()
+        val compositeDisposable = CompositeDisposable()
+        compositeDisposable.add(
+            ApiService.buildService().getData()
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribeOn(Schedulers.io())
+                .subscribe({ response -> onResponse(response) }, { t -> onFailure(t) })
+        )
+    }
 
-        api.enqueue(object : Callback<List<User>> {
-            override fun onResponse(call: Call<List<User>>, response: Response<List<User>>) {
-                if (response.body() != null)
-                    adapter.setUserListItems(response.body()!!)
-                if (response.isSuccessful) {
-                    response.body()?.let {
-                        for (user in it) {
-                            Log.d(TAG, user.toString())
-                        }
-                    }
-                }
-            }
+    private fun onFailure(t: Throwable) {
+        Toast.makeText(this, t.message, Toast.LENGTH_SHORT).show()
+    }
 
-            override fun onFailure(call: Call<List<User>>, t: Throwable) {
-                Log.e(TAG, "Error")
-            }
-        })
+    private fun onResponse(response: List<User>) {
+        recyclerView.apply {
+            setHasFixedSize(true)
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            adapter = Adapter(response)
+        }
+
     }
 }
