@@ -3,8 +3,11 @@ package com.example.retrofit
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.squareup.picasso.Picasso
 
 class Adapter(var userList: List<User>) : RecyclerView.Adapter<Adapter.ViewHolder>() {
 
@@ -24,6 +27,8 @@ class Adapter(var userList: List<User>) : RecyclerView.Adapter<Adapter.ViewHolde
         val company: TextView = itemView.findViewById(R.id.text_company)
         val catchPhrase: TextView = itemView.findViewById(R.id.text_catchPhrase)
         val bs: TextView = itemView.findViewById(R.id.text_bs)
+
+        val imageView: ImageView = itemView.findViewById(R.id.imageView)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Adapter.ViewHolder {
@@ -54,5 +59,18 @@ class Adapter(var userList: List<User>) : RecyclerView.Adapter<Adapter.ViewHolde
         holder.company.text = user.company.name
         holder.catchPhrase.text = user.company.catchPhrase
         holder.bs.text = user.company.bs
+
+        holder.imageView.setImageResource(R.drawable.ic_launcher_foreground)
+        if (position%2 == 0) {
+            Glide.with(holder.id.context)
+                .load("https://pixabay.com/get/53e2d0414955ae14f6d1867dda35367b1c3ed7ed5551734a_1920.jpg")
+                .placeholder(R.drawable.placeholder)
+                .into(holder.imageView)
+        } else {
+            Picasso.with(holder.itemView.context)
+                .load("https://pixabay.com/get/53e2d6444955a814f6d1867dda35367b1c3ed7ed55507040_1920.jpg")
+                .placeholder(R.drawable.placeholder)
+                .into(holder.imageView)
+        }
     }
 }
